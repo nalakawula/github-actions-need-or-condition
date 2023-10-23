@@ -27,7 +27,7 @@ jobs:
     environment:
       name: development
     steps:
-      - run: exit 99 #echo 'release-to-development'
+      # - run: exit 99 #echo 'release-to-development'
       - run: echo "::set-output name=status::success"
 
   release-to-staging:
@@ -58,14 +58,12 @@ jobs:
   create-sentry-release:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    needs:
-      - release-to-development
-      - release-to-staging
+    needs: check-success
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Create Sentry release
-        if: needs.release-to-development.outputs.status == 'success' || needs.release-to-staging.outputs.status == 'success'
+        # if: needs.release-to-development.outputs.status == 'success' || needs.release-to-staging.outputs.status == 'success'
         run: echo 'getsentry/action-release@v1'

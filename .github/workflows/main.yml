@@ -51,12 +51,6 @@ jobs:
           fetch-depth: 0
 
       - name: Create Sentry release
-        if: always() && needs.release-to-development.result == 'success' || needs.release-to-staging.result == 'success'
-        # uses: getsentry/action-release@v1
-        # env:
-        #   SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        #   SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-        #   SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-        # with:
-        #   environment: $SENTRY_ENV_NAME
+        if: 
+          (needs.release-to-development.result == 'success' || needs.release-to-staging.result == 'success')
         run: echo 'getsentry/action-release@v1'

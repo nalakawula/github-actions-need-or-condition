@@ -28,7 +28,7 @@ jobs:
       name: development
     steps:
       - name: Set ENV name for Sentry
-        run: echo "SENTRY_ENV_NAME=staging" >> "$GITHUB_ENV"
+        run: echo "SENTRY_ENV_NAME=development" >> "$GITHUB_ENV"
 
   release-to-staging:
     if: github.ref == 'refs/heads/main'
@@ -41,22 +41,8 @@ jobs:
       - name: Set ENV name for Sentry
         run: echo "SENTRY_ENV_NAME=staging" >> "$GITHUB_ENV"
 
-  check-success:
-    needs: [release-to-development, release-to-staging]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        job: [release-to-development, release-to-staging]
-    steps:
-      - name: Check success of ${{ matrix.job }}
-        run: |
-          if [ "${{ needs[matrix.job].result }}" != "success" ]; then
-            exit 1
-          fi
-        continue-on-error: true
-
   create-sentry-release:
-    if: github.event_name == 'push'
+    if: var.SENTRY_ENV_NAME == development || var.SENTRY_ENV_NAME == staging
     runs-on: ubuntu-latest
     needs: check-success
     steps:

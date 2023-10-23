@@ -28,6 +28,7 @@ jobs:
       name: development
     steps:
       - run: exit 99 #echo 'release-to-development'
+      - run: echo "::set-output name=status::success"
 
   release-to-staging:
     if: github.ref == 'refs/heads/main'
@@ -38,6 +39,7 @@ jobs:
       name: staging
     steps:
       - run: echo 'release-to-staging'
+      - run: echo "::set-output name=status::success"
 
   create-sentry-release:
     if: github.event_name == 'push'
@@ -51,6 +53,5 @@ jobs:
           fetch-depth: 0
 
       - name: Create Sentry release
-        if: 
-          (needs.release-to-development.result == 'success' || needs.release-to-staging.result == 'success')
+        if: needs.release-to-development.outputs.status == 'success' || needs.release-to-staging.outputs.status == 'success'
         run: echo 'getsentry/action-release@v1'

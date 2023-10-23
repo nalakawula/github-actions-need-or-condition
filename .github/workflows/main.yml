@@ -37,7 +37,6 @@ jobs:
     environment:
       name: staging
     steps:
-    steps:
       - run: echo 'release-to-staging'
 
   create-sentry-release:

@@ -41,6 +41,20 @@ jobs:
       - run: echo 'release-to-staging'
       - run: echo "::set-output name=status::success"
 
+  check-success:
+    needs: [release-to-development, release-to-staging]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        job: [release-to-development, release-to-staging]
+    steps:
+      - name: Check success of ${{ matrix.job }}
+        run: |
+          if [ "${{ needs[matrix.job].result }}" != "success" ]; then
+            exit 1
+          fi
+        continue-on-error: true
+
   create-sentry-release:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest

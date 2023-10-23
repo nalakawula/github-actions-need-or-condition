@@ -27,8 +27,8 @@ jobs:
     environment:
       name: development
     steps:
-      # - run: exit 99 #echo 'release-to-development'
-      - run: echo "::set-output name=status::success"
+      - name: Set ENV name for Sentry
+        run: echo "SENTRY_ENV_NAME=staging" >> "$GITHUB_ENV"
 
   release-to-staging:
     if: github.ref == 'refs/heads/main'
@@ -38,8 +38,8 @@ jobs:
     environment:
       name: staging
     steps:
-      - run: echo 'release-to-staging'
-      - run: echo "::set-output name=status::success"
+      - name: Set ENV name for Sentry
+        run: echo "SENTRY_ENV_NAME=staging" >> "$GITHUB_ENV"
 
   check-success:
     needs: [release-to-development, release-to-staging]
@@ -65,5 +65,10 @@ jobs:
           fetch-depth: 0
 
       - name: Create Sentry release
-        # if: needs.release-to-development.outputs.status == 'success' || needs.release-to-staging.outputs.status == 'success'
-        run: echo 'getsentry/action-release@v1'
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        with:
+          environment: $SENTRY_ENV_NAME

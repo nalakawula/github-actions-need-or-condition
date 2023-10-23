@@ -27,7 +27,7 @@ jobs:
     environment:
       name: development
     steps:
-      - run: echo 'release-to-development'
+      - run: exit 99 #echo 'release-to-development'
 
   release-to-staging:
     if: github.ref == 'refs/heads/main'
